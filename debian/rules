@@ -45,11 +45,16 @@ ifneq (,$(filter $(DEB_HOST_ARCH), armel m68k mipsel powerpc sh4))
 export DEB_LDFLAGS_MAINT_APPEND += -Wl,--no-as-needed -latomic -Wl,--as-needed
 endif
 
+# Note (Quintin): Build with Clang 16
+CC = clang-16
+CXX = clang++-16
+LDFLAGS += -fuse-ld=lld-16
+
 # Note (Quintin): OpenGL support seems to be broken
 CMAKE_FLAGS = \
 	-G Ninja \
-	-D CMAKE_C_COMPILER=clang-16 \
-	-D CMAKE_CXX_COMPILER=clang++-16 \
+	-D CMAKE_C_COMPILER="$(CC)" \
+	-D CMAKE_CXX_COMPILER="$(CXX)" \
 	-D CMAKE_BUILD_TYPE=Release	\
 	-D BUILD_EXAMPLES=OFF \
 	-D BUILD_TESTS=OFF \
