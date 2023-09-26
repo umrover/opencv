@@ -37,4 +37,4 @@ usr/lib/*/libopencv_rapid.so.*
 usr/lib/*/libopencv_mcc.so.*
 usr/lib/*/libopencv_sfm.so.*
 usr/lib/*/libopencv_xfeatures2d.so.*
-
+usr/lib/*/libopencv_cu*.so

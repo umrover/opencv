@@ -4,6 +4,7 @@ Uploaders: Quintin Dwight <rover-software-lead-24@umich.edu>
 Section: devel
 Priority: optional
 Build-Depends: cmake,
+               cuda,
                debhelper-compat (= 12),
                ninja-build,
                libavcodec-dev,
@@ -983,42 +984,7 @@ Depends: ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
 Description: computer vision contrlib library
  This package contains the OpenCV (Open Computer Vision) opencv_contrib runtime
- libraries. This package contain following contrlib libraries:
- .
-   - aruco
-   - barcode
-   - bgsegm
-   - bioinspired
-   - ccalib
-   - cnn_3dobj
-   - cvv
-   - datasets
-   - dpm
-   - face
-   - freetype
-   - fuzzy
-   - hdf
-   - hfs
-   - img_hash
-   - line_descriptor
-   - matlab
-   - optflow
-   - ovis
-   - phase_unwrapping
-   - plot
-   - reg
-   - rgbd
-   - saliency
-   - sfm
-   - stereo
-   - structured_light
-   - surface_matching
-   - tracking
-   - xfeatures2d
-   - ximgproc
-   - xobjdetect
-   - xphoto
-   - wechat-qrcode
+ libraries.
  .
  The Open Computer Vision Library is a collection of algorithms and sample
  code for various computer vision problems. The library is compatible with
