@@ -185,7 +185,7 @@ usr/include/opencv4/opencv2/sfm.hpp
 usr/include/opencv4/opencv2/sfm/*
 usr/lib/*/libopencv_sfm.a
 usr/lib/*/libopencv_sfm.so
-# misc
-# usr/lib/*/libnumeric.a
-# usr/lib/*/libmultiview.a
-# usr/lib/*/libcorrespondence.a
+# 3rdparty
+usr/lib/*/opencv4/3rdparty/libnumeric.a
+usr/lib/*/opencv4/3rdparty/libmultiview.a
+usr/lib/*/opencv4/3rdparty/libcorrespondence.a
