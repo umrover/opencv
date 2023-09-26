@@ -4,7 +4,7 @@ Uploaders: Quintin Dwight <rover-software-lead-24@umich.edu>
 Section: devel
 Priority: optional
 Build-Depends: cmake,
-               cuda,
+               cuda-12-2,
                debhelper-compat (= 12),
                ninja-build,
                libavcodec-dev,
