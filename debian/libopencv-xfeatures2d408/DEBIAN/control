@@ -1,0 +1,12 @@
+Package: libopencv-xfeatures2d408
+Source: opencv
+Version: 4.8.0
+Architecture: amd64
+Maintainer: MRover <rover-software-team@umich.edu>
+Installed-Size: 887
+Depends: libc6 (>= 2.29), libgcc-s1 (>= 3.0), libopencv-core408 (>= 4.8.0), libopencv-features2d408 (>= 4.8.0), libopencv-imgproc408 (>= 4.8.0), libstdc++6 (>= 11)
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: https://mrover.org
+Description: N/A

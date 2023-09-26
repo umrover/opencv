@@ -1,0 +1,12 @@
+Package: libopencv-sfm408
+Source: opencv
+Version: 4.8.0
+Architecture: amd64
+Maintainer: MRover <rover-software-team@umich.edu>
+Installed-Size: 378
+Depends: libc6 (>= 2.29), libgcc-s1 (>= 3.0), libgoogle-glog0v5, libopencv-core408 (>= 4.8.0), libstdc++6 (>= 5.2)
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: https://mrover.org
+Description: N/A

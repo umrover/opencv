@@ -1,0 +1,12 @@
+b9971905d5aa2ecba17dbfb208327192  usr/include/opencv4/opencv2/sfm.hpp
+51da4bdec181c680f76e0e74b07a4434  usr/include/opencv4/opencv2/sfm/conditioning.hpp
+cdc36cd39ab040033836aa244221680e  usr/include/opencv4/opencv2/sfm/fundamental.hpp
+07fc1fe720d5276984ed9773b9acf6df  usr/include/opencv4/opencv2/sfm/io.hpp
+b1bb62bb961afda9778b28e4e92a6a14  usr/include/opencv4/opencv2/sfm/numeric.hpp
+f3f582f61740ee3e230c4b7e6768d685  usr/include/opencv4/opencv2/sfm/projection.hpp
+529c7e7f706b86b9b13a84edd7e02866  usr/include/opencv4/opencv2/sfm/reconstruct.hpp
+ca18d656a8d26d3b16cb0a94945b3552  usr/include/opencv4/opencv2/sfm/robust.hpp
+4ce4c908849847c08e260303d9c6843a  usr/include/opencv4/opencv2/sfm/simple_pipeline.hpp
+b71b4f705abcc22e879177137d97d7a6  usr/include/opencv4/opencv2/sfm/triangulation.hpp
+351ef5e51e780fcd6a9b3dff5fce549d  usr/lib/x86_64-linux-gnu/libopencv_sfm.a
+2e3f89df3f10079dd01dc9b2fa4d0932  usr/share/doc/libopencv-sfm-dev/changelog.gz

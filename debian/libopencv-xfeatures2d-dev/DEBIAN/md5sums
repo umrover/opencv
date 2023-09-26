@@ -1,0 +1,5 @@
+49acfc23ec359f72a09640cd70e8f56b  usr/include/opencv4/opencv2/xfeatures2d.hpp
+8ae2eff88194307e1bb215e77dde7744  usr/include/opencv4/opencv2/xfeatures2d/cuda.hpp
+59853576d7fc3c1d8259d1797df67d63  usr/include/opencv4/opencv2/xfeatures2d/nonfree.hpp
+21cede7f3f7d1e8867d2c52a6a01149d  usr/lib/x86_64-linux-gnu/libopencv_xfeatures2d.a
+2e3f89df3f10079dd01dc9b2fa4d0932  usr/share/doc/libopencv-xfeatures2d-dev/changelog.gz

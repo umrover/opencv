@@ -1,0 +1,3 @@
+shlibs:Depends=libc6 (>= 2.29), libgcc-s1 (>= 3.0), libopencv-core408 (>= 4.8.0), libopencv-features2d408 (>= 4.8.0), libopencv-imgproc408 (>= 4.8.0), libstdc++6 (>= 11)
+misc:Depends=
+misc:Pre-Depends=

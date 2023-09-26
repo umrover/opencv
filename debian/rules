@@ -1,0 +1,184 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpkg/architecture.mk
+
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+
+BUILDDIR = obj-$(DEB_HOST_MULTIARCH)
+
+CMAKE_ARCH_FLAGS :=
+
+# Comply with Debian architectures baseline.
+# See cmake/OpenCVCompilerOptimizations.cmake for a list of known features.
+# Reference: https://github.com/opencv/opencv/wiki/CPU-optimizations-build-options
+ifeq ($(DEB_HOST_ARCH_CPU),amd64)
+ # Only SSE2 on amd64
+ CMAKE_ARCH_FLAGS += -DCPU_BASELINE="SSE2"
+ CMAKE_ARCH_FLAGS += -DCPU_BASELINE_DISABLE="SSE3"
+else ifeq ($(DEB_HOST_ARCH_CPU),armhf)
+ CMAKE_ARCH_FLAGS += -DCPU_BASELINE_DISABLE="VFPV3,NEON"
+ CMAKE_ARCH_FLAGS += -DCPU_DISPATCH="VFPV3,NEON"
+else ifeq ($(DEB_HOST_ARCH_CPU),i386)
+ # Be extra sure SSE is not picked up on i386
+ CMAKE_ARCH_FLAGS += -DCPU_BASELINE_DISABLE="SSE,SSE2"
+else ifeq ($(DEB_HOST_ARCH_CPU),ppc64el)
+ # VSX for Power8, VSX3 for Power9
+ CMAKE_ARCH_FLAGS += -DCPU_BASELINE="VSX"
+ CMAKE_ARCH_FLAGS += -DCPU_DISPATCH="VSX3"
+endif
+
+# TBB support
+ifneq (,$(findstring $(DEB_HOST_ARCH), amd64 arm64 armel armhf i386 mips mips64el mipsel ppc64el s390x powerpc powerpcspe riscv64 ppc64 sh4 sparc64))
+CMAKE_ARCH_FLAGS += -DWITH_TBB=ON
+else
+CMAKE_ARCH_FLAGS += -DWITH_TBB=OFF
+endif
+
+# Linux-specific stuff
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+CMAKE_ARCH_FLAGS += -DWITH_1394=ON -DWITH_V4L=ON
+else
+CMAKE_ARCH_FLAGS += -DWITH_1394=OFF -DWITH_V4L=OFF
+endif
+
+ifneq (,$(filter $(DEB_HOST_ARCH), armel m68k mipsel powerpc sh4))
+export DEB_LDFLAGS_MAINT_APPEND += -Wl,--no-as-needed -latomic -Wl,--as-needed
+endif
+
+# Note (Quintin): OpenGL support seems to be broken
+CMAKE_FLAGS = \
+	-G Ninja \
+	-D CMAKE_C_COMPILER=clang-16 \
+	-D CMAKE_CXX_COMPILER=clang++-16 \
+	-D CMAKE_BUILD_TYPE=Release	\
+	-D BUILD_EXAMPLES=OFF \
+	-D BUILD_TESTS=OFF \
+	-D BUILD_PERF_TESTS=OFF \
+	-D BUILD_PROTOBUF=OFF \
+	-D BUILD_INFO_SKIP_TIMESTAMP=ON \
+	-D BUILD_opencv_dnn=ON \
+	-D BUILD_opencv_dnn_modern=ON \
+	-D BUILD_opencv_face=ON \
+	-D BUILD_opencv_python2=OFF \
+	-D BUILD_opencv_python3=OFF \
+	-D CMAKE_CXX_FLAGS_RELEASE="$(CXXFLAGS)" \
+	-D CMAKE_C_FLAGS_RELEASE="$(CFLAGS)" \
+	-D CMAKE_EXE_LINKER_FLAGS_RELEASE="$(LDFLAGS)" \
+	-D CMAKE_INSTALL_LIBDIR="lib/$(DEB_HOST_MULTIARCH)" \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CMAKE_SKIP_RPATH=ON \
+	-D CMAKE_VERBOSE_MAKEFILE=ON \
+	-D ENABLE_PRECOMPILED_HEADERS=OFF \
+	-D OPENCL_INCLUDE_DIR:PATH="/usr/include/CL/" \
+	-D OPENCV_EXTRA_MODULES_PATH="$(CURDIR)/contrib/modules" \
+	-D OPENCV_LAPACK_FIND_PACKAGE_ONLY=ON \
+	-D OPENCV_DOWNLOAD_TRIES_LIST= \
+	-D OPENCV_ENABLE_NONFREE=ON \
+	-D OpenGL_GL_PREFERENCE=GLVND \
+	-D PROTOBUF_UPDATE_FILES=ON \
+	-D WITH_ADE=OFF \
+	-D WITH_CAROTENE=OFF \
+	-D WITH_CUDA=OFF \
+	-D WITH_EIGEN=ON \
+	-D WITH_FFMPEG=ON \
+	-D WITH_GDAL=ON \
+	-D WITH_GDCM=ON \
+	-D WITH_GSTREAMER=ON \
+	-D WITH_GPHOTO2=ON \
+	-D WITH_GTK=OFF \
+	-D WITH_IPP=OFF \
+	-D WITH_ITT=OFF \
+	-D WITH_JASPER=OFF \
+	-D WITH_JPEG=ON	\
+	-D WITH_LAPACK=ON \
+	-D WITH_NGRAPH=OFF \
+	-D WITH_OPENCL=ON \
+	-D WITH_OPENEXR=ON \
+	-D WITH_OPENGL=OFF \
+	-D WITH_PNG=ON	\
+	-D WITH_PROTOBUF=ON \
+	-D WITH_PVAPI=ON	\
+	-D WITH_QT=5 \
+	-D WITH_QUIRC=ON \
+	-D WITH_TIFF=ON	\
+	-D WITH_UNICAP=OFF \
+	-D WITH_VTK=ON \
+	-D WITH_XINE=OFF	\
+	$(CMAKE_ARCH_FLAGS)
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	dh_auto_clean -B $(BUILDDIR)
+	dh_auto_clean -B $(BUILDDIR)-static
+
+
+override_dh_auto_configure:
+	# prepare the 3rd party directory
+	test -d 3rdparty || cp -av debian/3rdparty-4.6.0 3rdparty
+	# dynamically linked
+	dh_auto_configure -B $(BUILDDIR) \
+		-- $(CMAKE_FLAGS) \
+		-DCMAKE_SHARED_LINKER_FLAGS_RELEASE="$(LDFLAGS)" \
+		-DBUILD_SHARED_LIBS=ON
+	# statically linked
+	dh_auto_configure -B $(BUILDDIR)-static \
+		-- $(CMAKE_FLAGS) \
+		-DBUILD_SHARED_LIBS=OFF \
+		-DBUILD_opencv_apps=OFF
+	# strip non-reproducible info from version string
+	sed -i -e 's,$(CURDIR),<<PKGBUILDDIR>>,g' \
+		-e "s,$$(uname -sr),,g" \
+		$(BUILDDIR)/modules/core/version_string.inc \
+		$(BUILDDIR)-static/modules/core/version_string.inc
+
+override_dh_auto_build:
+	# documentation
+ifneq (,$(findstring $(DEB_HOST_ARCH), mipsel))
+	# dynamically linked
+	dh_auto_build --no-parallel -B $(BUILDDIR)
+	# statically linked
+	dh_auto_build --no-parallel -B $(BUILDDIR)-static
+else
+	# dynamically linked
+	dh_auto_build -B $(BUILDDIR)
+	# statically linked
+	dh_auto_build -B $(BUILDDIR)-static
+endif
+
+override_dh_auto_test:
+ifeq ($(DEB_HOST_ARCH),mipsel)
+	true # Don't run the tests at all
+else
+	-LD_LIBRARY_PATH=$(shell realpath $(BUILDDIR))/lib dh_auto_test
+endif
+
+ifeq ($(DEB_HOST_ARCH),mipsel)
+override_dh_dwz:
+	true # mipsel would FTBFS, possibly due to out-of-memory
+endif
+
+override_dh_auto_install:
+	dh_auto_install -B $(BUILDDIR)
+
+# Note (Quintin): This fails
+# override_dh_usrlocal:
+
+# Note (Quintin): This fails
+override_dh_dwz:
+
+execute_before_dh_install:
+	# put the static libs together with the rest of the stuff
+	cp -v $(BUILDDIR)-static/lib/*.a debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/
+	# -find debian/tmp -type f -name jquery.js -delete
+	# -find debian/tmp -type f -name '*.supp' -delete
+	# -find debian/tmp -type d -empty -delete
+	# -$(RM) -r $(BUILDDIR)-static
+
+# execute_before_dh_strip_nondeterminism-indep:
+# 	# This can be deleted after https://github.com/doxygen/doxygen/pull/9227 is
+# 	# in the version of Doxygen in Debian. It won't hurt afterwards, because
+# 	# there will be nothing to strip anymore.
+# 	sed -i -e 's,$(CURDIR)/\($(BUILDDIR)/\)\?,,g' \
+# 		debian/opencv-doc/usr/share/doc/opencv-doc/opencv4/html/opencv.tag
