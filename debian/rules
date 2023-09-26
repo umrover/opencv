@@ -165,11 +165,12 @@ override_dh_dwz:
 	true # mipsel would FTBFS, possibly due to out-of-memory
 endif
 
+# Note (Quintin): Needed for some CUDA libraries in /usr/local
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+
 override_dh_auto_install:
 	dh_auto_install -B $(BUILDDIR)
-
-# Note (Quintin): This fails
-# override_dh_usrlocal:
 
 # Note (Quintin): This fails
 override_dh_dwz:
