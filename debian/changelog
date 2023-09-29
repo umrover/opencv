@@ -1,5 +1,5 @@
-opencv (4.8.0) unstable; urgency=medium
+opencv (4.8.1+mrover) unstable; urgency=medium
 
-  * Update to 4.8.0
+  * Update to 4.8.1
 
  -- Quintin Dwight <rover-software-lead-24@umich.edu>  Tue, 26 Sep 2023 19:20:35 -0700
