@@ -1,4 +1,4 @@
-opencv (4.8.1+mrover) unstable; urgency=medium
+opencv (4.8.1+mrover+cuda) unstable; urgency=medium
 
   * Update to 4.8.1
 
